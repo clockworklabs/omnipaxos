@@ -109,9 +109,7 @@ impl OmniPaxosUI {
                 self.app.current_role = Role::Leader;
                 // Update the progress of all the followers
                 let leader_acc_idx = op_states.cluster_state.accepted_indexes[leader_id as usize];
-                for (idx, &accepted_idx) in
-                    op_states.cluster_state.accepted_indexes.iter().enumerate()
-                {
+                for (&idx, &accepted_idx) in op_states.cluster_state.accepted_indexes.iter() {
                     self.app.followers_progress[idx] = if leader_acc_idx == 0 {
                         0.0 // To avoid division by zero
                     } else {

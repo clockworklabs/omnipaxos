@@ -1,5 +1,5 @@
 use crate::{util::defaults::*, UIAppConfig};
-use omnipaxos::util::NodeId;
+use omnipaxos::{util::NodeId, utils::VecLike, vec_like};
 use ratatui::style::Color;
 use std::time::Instant;
 
@@ -49,9 +49,9 @@ pub(crate) struct App {
     pub(crate) dps: f64,
     /// The progress of all the followers, calculated by accepted_idx / leader’s accepted index.
     /// Calculated only when the current node is the leader. Idx is the pid of the node.
-    pub(crate) followers_progress: Vec<f64>,
+    pub(crate) followers_progress: VecLike<f64>,
     /// The accepted_idx of all the followers. Idx is the pid of the node.
-    pub(crate) followers_accepted_idx: Vec<usize>,
+    pub(crate) followers_accepted_idx: VecLike<usize>,
 }
 
 impl App {
@@ -98,8 +98,8 @@ impl App {
             last_update_time: Instant::now(),
             throughput_data: Vec::with_capacity(THROUGHPUT_DATA_SIZE),
             dps: 0.0,
-            followers_progress: vec![0.0; max_pid + 1],
-            followers_accepted_idx: vec![0; max_pid + 1],
+            followers_progress: vec_like![0.0; max_pid + 1],
+            followers_accepted_idx: vec_like![0; max_pid + 1],
         }
     }
 
