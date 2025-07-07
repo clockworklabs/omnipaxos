@@ -2,7 +2,11 @@ use omnipaxos::{
     ballot_leader_election::Ballot,
     storage::{Entry, StopSign, Storage, StorageOp, StorageResult},
 };
-use rocksdb::{ColumnFamilyDescriptor, ColumnFamilyRef, Options, WriteBatchWithTransaction, DB};
+pub use rocksdb::{
+    statistics::{Histogram, HistogramData},
+    Options,
+};
+use rocksdb::{ColumnFamilyDescriptor, ColumnFamilyRef, WriteBatchWithTransaction, DB};
 use serde::{Deserialize, Serialize};
 use std::marker::PhantomData;
 use zerocopy::{AsBytes, FromBytes};
