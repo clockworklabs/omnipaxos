@@ -1,3 +1,5 @@
+#![allow(clippy::uninlined_format_args)]
+
 use crate::{entry::LogEntry, server::OmniPaxosServer, util::*};
 use omnipaxos::{ClusterConfig, OmniPaxos, OmniPaxosConfig, ServerConfig};
 use omnipaxos_storage::memory_storage::MemoryStorage;
