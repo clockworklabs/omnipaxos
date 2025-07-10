@@ -137,7 +137,7 @@ where
 
     /// Initiates the trim process.
     /// # Arguments
-    /// * `trim_idx` - Deletes all entries up to [`trim_idx`], if the [`trim_idx`] is `None` then the minimum index accepted by **ALL** servers will be used as the [`trim_idx`].
+    /// * `trim_idx` - Deletes all entries up to [`trim_idx`], if the [`trim_idx`] is `None` then `decided_idx`  will be used as the [`trim_idx`].
     pub(crate) fn trim(&mut self, trim_idx: Option<usize>) -> Result<(), CompactionErr> {
         match self.state {
             (Role::Leader, _) => {

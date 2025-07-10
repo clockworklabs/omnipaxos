@@ -183,14 +183,6 @@ where
         }
     }
 
-    //    pub fn get_min_all_accepted_idx(&self) -> usize {
-    //        self.accepted_indexes
-    //            .values()
-    //            .min()
-    //            .copied()
-    //            .expect("No accepted indexes found")
-    //    }
-    //
     pub fn reset_latest_accept_meta(&mut self) {
         self.latest_accept_meta = vec![None; self.max_pid];
     }
