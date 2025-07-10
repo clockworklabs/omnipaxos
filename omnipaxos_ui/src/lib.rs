@@ -122,7 +122,7 @@ impl OmniPaxosUI {
                     } else {
                         accepted_idx as f64 / leader_acc_idx as f64
                     };
-                    //        self.app.followers_accepted_idx[idx] = accepted_idx;
+                    self.app.followers_accepted_idx[idx as usize] = accepted_idx;
                 }
             } else {
                 // Current node is a follower

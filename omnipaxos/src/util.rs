@@ -3,9 +3,10 @@ use super::{
     messages::sequence_paxos::Promise,
     storage::{Entry, SnapshotType, StopSign},
 };
+use nohash_hasher::IntMap;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-use std::{cmp::Ordering, collections::HashMap, fmt::Debug, marker::PhantomData};
+use std::{cmp::Ordering, marker::PhantomData};
 
 /// Struct used to help another server synchronize their log with the current state of our own log.
 #[derive(Clone, Debug)]
@@ -70,7 +71,8 @@ enum PromiseState {
     PromisedHigher,
 }
 
-type IntMap<V> = HashMap<NodeId, V>;
+/// type alias for a map from NodeId to a value of type T
+pub type NodeMap<T> = IntMap<NodeId, T>;
 
 #[derive(Debug, Clone)]
 pub(crate) struct LeaderState<T>
@@ -78,13 +80,13 @@ where
     T: Entry,
 {
     pub n_leader: Ballot,
-    promises_meta: IntMap<PromiseState>,
+    promises_meta: NodeMap<PromiseState>,
     // the sequence number of accepts for each follower where AcceptSync has sequence number = 1
-    follower_seq_nums: IntMap<SequenceNumber>,
-    pub accepted_indexes: IntMap<usize>,
+    follower_seq_nums: NodeMap<SequenceNumber>,
+    pub accepted_indexes: NodeMap<usize>,
     max_promise_meta: PromiseMetaData,
     max_promise_sync: Option<LogSync<T>>,
-    latest_accept_meta: IntMap<Option<(Ballot, usize)>>, //  index in outgoing
+    latest_accept_meta: NodeMap<Option<(Ballot, usize)>>, //  index in outgoing
     // The number of promises needed in the prepare phase to become synced and
     // the number of accepteds needed in the accept phase to decide an entry.
     pub quorum: Quorum,
@@ -95,10 +97,10 @@ where
     T: Entry,
 {
     pub fn with(n_leader: Ballot, peers: &[NodeId], quorum: Quorum) -> Self {
-        let mut promises_meta = IntMap::new();
-        let mut follower_seq_nums = IntMap::new();
-        let mut accepted_indexes = IntMap::new();
-        let mut latest_accept_meta = IntMap::new();
+        let mut promises_meta = NodeMap::default();
+        let mut follower_seq_nums = NodeMap::default();
+        let mut accepted_indexes = NodeMap::default();
+        let mut latest_accept_meta = NodeMap::default();
 
         // Initialize maps for all peers
         for &peer in peers.iter() {
@@ -133,8 +135,10 @@ where
             *seq_num
         } else {
             // Handle case where pid is not in the map
-            let mut new_seq = SequenceNumber::default();
-            new_seq.counter = 1;
+            let new_seq = SequenceNumber {
+                counter: 1,
+                ..Default::default()
+            };
             self.follower_seq_nums.insert(pid, new_seq);
             new_seq
         }
