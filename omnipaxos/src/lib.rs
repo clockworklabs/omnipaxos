@@ -12,6 +12,7 @@
 
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![deny(missing_docs)]
+#![allow(clippy::uninlined_format_args)]
 /// Trait and struct related to the leader election in Omni-Paxos.
 pub mod ballot_leader_election;
 /// OmniPaxos error definitions

@@ -2,6 +2,7 @@
 
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![deny(missing_docs)]
+#![allow(clippy::uninlined_format_args)]
 /// an in-memory storage implementation with fast read and writes
 pub mod memory_storage;
 
