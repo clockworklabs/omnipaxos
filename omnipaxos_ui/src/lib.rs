@@ -1,6 +1,7 @@
 //! A library for visualizing [OmniPaxos](https://crates.io/crates/omnipaxos) node in a terminal dashboard.
 
 #![deny(missing_docs)]
+#![allow(clippy::uninlined_format_args)]
 use crate::app::{App, Role};
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
