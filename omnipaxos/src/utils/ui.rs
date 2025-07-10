@@ -2,14 +2,14 @@ use crate::{
     ballot_leader_election::Ballot,
     messages::ballot_leader_election::HeartbeatReply,
     storage::Entry,
-    util::{LeaderState, NodeId},
+    util::{LeaderState, NodeId, NodeMap},
 };
 
 /// The states of all the nodes in the cluster.
 #[derive(Debug, Clone, Default)]
 pub struct ClusterState {
     /// The accepted indexes of all the nodes in the cluster. The index of the vector is the node id.
-    pub accepted_indexes: Vec<usize>,
+    pub accepted_indexes: NodeMap<usize>,
     /// All the received heartbeats from the previous heartbeat round, including the current node.
     /// Represents nodes that are currently alive from the view of the current node.
     pub heartbeats: Vec<HeartbeatReply>,

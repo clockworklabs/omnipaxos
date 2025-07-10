@@ -20,8 +20,7 @@ where
         #[cfg(feature = "logging")]
         debug!(self.logger, "Newly elected leader: {:?}", n);
         if self.pid == n.pid {
-            self.leader_state =
-                LeaderState::with(n, self.leader_state.max_pid, self.leader_state.quorum);
+            self.leader_state = LeaderState::with(n, &self.peers, self.leader_state.quorum);
             // Flush any pending writes
             // Don't have to handle flushed entries here because we will sync with followers
             let _ = self.internal_storage.flush_batch().expect(WRITE_ERROR_MSG);

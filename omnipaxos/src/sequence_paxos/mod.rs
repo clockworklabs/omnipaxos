@@ -55,8 +55,6 @@ where
         let peers = config.peers;
         let num_nodes = &peers.len() + 1;
         let quorum = Quorum::with(config.flexible_quorum, num_nodes);
-        let max_peer_pid = peers.iter().max().unwrap();
-        let max_pid = *std::cmp::max(max_peer_pid, &pid) as usize;
         let mut outgoing = Vec::with_capacity(config.buffer_size);
         let (state, leader) = match storage
             .get_promise()
@@ -88,12 +86,12 @@ where
                 pid,
             ),
             pid,
-            peers,
+            peers: peers.clone(),
             state,
             buffered_proposals: vec![],
             buffered_stopsign: None,
             outgoing,
-            leader_state: LeaderState::<T>::with(leader, max_pid, quorum),
+            leader_state: LeaderState::<T>::with(leader, &peers, quorum),
             latest_accepted_meta: None,
             current_seq_num: SequenceNumber::default(),
             cached_promise_message: None,

@@ -109,16 +109,20 @@ impl OmniPaxosUI {
                 // Current node is the leader
                 self.app.current_role = Role::Leader;
                 // Update the progress of all the followers
-                let leader_acc_idx = op_states.cluster_state.accepted_indexes[leader_id as usize];
-                for (idx, &accepted_idx) in
-                    op_states.cluster_state.accepted_indexes.iter().enumerate()
-                {
-                    self.app.followers_progress[idx] = if leader_acc_idx == 0 {
+                let leader_acc_idx = op_states
+                    .cluster_state
+                    .accepted_indexes
+                    .get(&leader_id)
+                    .copied()
+                    .unwrap_or(0);
+
+                for (&idx, &accepted_idx) in op_states.cluster_state.accepted_indexes.iter() {
+                    self.app.followers_progress[idx as usize] = if leader_acc_idx == 0 {
                         0.0 // To avoid division by zero
                     } else {
                         accepted_idx as f64 / leader_acc_idx as f64
                     };
-                    self.app.followers_accepted_idx[idx] = accepted_idx;
+                    self.app.followers_accepted_idx[idx as usize] = accepted_idx;
                 }
             } else {
                 // Current node is a follower
