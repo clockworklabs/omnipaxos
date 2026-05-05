@@ -6,7 +6,7 @@ use super::{
 use nohash_hasher::IntMap;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-use std::{cmp::Ordering, marker::PhantomData};
+use std::{cmp::Ordering, marker::PhantomData, sync::atomic::AtomicU64};
 
 /// Struct used to help another server synchronize their log with the current state of our own log.
 #[derive(Clone, Debug)]
@@ -400,19 +400,22 @@ impl SequenceNumber {
 }
 
 pub(crate) struct LogicalClock {
-    time: u64,
+    time: AtomicU64,
     timeout: u64,
 }
 
 impl LogicalClock {
     pub fn with(timeout: u64) -> Self {
-        Self { time: 0, timeout }
+        Self {
+            time: AtomicU64::new(0),
+            timeout,
+        }
     }
 
-    pub fn tick_and_check_timeout(&mut self) -> bool {
-        self.time += 1;
-        if self.time == self.timeout {
-            self.time = 0;
+    pub fn tick_and_check_timeout(&self) -> bool {
+        let t = self.time.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        if t + 1 == self.timeout {
+            self.time.store(0, std::sync::atomic::Ordering::SeqCst);
             true
         } else {
             false

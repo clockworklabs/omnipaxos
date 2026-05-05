@@ -72,7 +72,7 @@ fn _setup_leader() -> (
     BrokenStore,
     OmniPaxos<Value, StorageType<Value>>,
 ) {
-    let (mem_storage, storage_conf, mut op) = setup_follower();
+    let (mem_storage, storage_conf, op) = setup_follower();
     let mut n = mem_storage.lock().unwrap().get_promise().unwrap().unwrap();
     let n_old = n;
     let setup_msg = Message::<Value>::BLE(BLEMessage {
@@ -148,7 +148,7 @@ fn setup_follower() -> (
     BrokenStore,
     OmniPaxos<Value, StorageType<Value>>,
 ) {
-    let (mem_storage, storage_conf, mut op) = basic_setup();
+    let (mem_storage, storage_conf, op) = basic_setup();
     let mut n = mem_storage.lock().unwrap().get_promise().unwrap().unwrap();
     n.config_id = 1;
     n.n += 1;
@@ -204,7 +204,7 @@ fn setup_follower() -> (
 #[serial]
 fn atomic_storage_acceptsync_test() {
     fn run_single_test(fail_after_n_ops: usize) {
-        let (mem_storage, storage_conf, mut op) = basic_setup();
+        let (mem_storage, storage_conf, op) = basic_setup();
         let mut n = mem_storage.lock().unwrap().get_promise().unwrap().unwrap();
         n.n += 1;
         n.pid = 2;
@@ -271,7 +271,7 @@ fn atomic_storage_acceptsync_test() {
 #[serial]
 fn atomic_storage_trim_test() {
     fn run_single_test(fail_after_n_ops: usize) {
-        let (mem_storage, storage_conf, mut op) = setup_follower();
+        let (mem_storage, storage_conf, op) = setup_follower();
 
         let setup_msg = Message::<Value>::SequencePaxos(PaxosMessage {
             from: 2,
@@ -335,7 +335,7 @@ fn atomic_storage_trim_test() {
 #[serial]
 fn atomic_storage_snapshot_test() {
     fn run_single_test(fail_after_n_ops: usize) {
-        let (mem_storage, storage_conf, mut op) = setup_follower();
+        let (mem_storage, storage_conf, op) = setup_follower();
 
         let setup_msg = Message::<Value>::SequencePaxos(PaxosMessage {
             from: 2,
@@ -405,7 +405,7 @@ fn atomic_storage_snapshot_test() {
 #[serial]
 fn atomic_storage_accept_decide_test() {
     fn run_single_test(fail_after_n_ops: usize) {
-        let (mem_storage, storage_conf, mut op) = setup_follower();
+        let (mem_storage, storage_conf, op) = setup_follower();
 
         let old_log_len = mem_storage.lock().unwrap().get_log_len().unwrap();
         let old_decided_idx = mem_storage.lock().unwrap().get_decided_idx().unwrap();
@@ -458,7 +458,7 @@ fn atomic_storage_accept_decide_test() {
 #[serial]
 fn atomic_storage_majority_promises_test() {
     fn run_single_test(fail_after_n_ops: usize) {
-        let (mem_storage, storage_conf, mut op) = setup_follower();
+        let (mem_storage, storage_conf, op) = setup_follower();
         let mut n = mem_storage.lock().unwrap().get_promise().unwrap().unwrap();
         // Send messages to 1 such that it tries to take over leadership
         let n_old = n;
