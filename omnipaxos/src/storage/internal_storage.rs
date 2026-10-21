@@ -316,6 +316,17 @@ where
         decided_idx: usize,
         log_sync: Option<LogSync<T>>,
     ) -> StorageResult<usize> {
+        if let Some(sync) = &log_sync {
+            debug_assert!(
+                sync.sync_idx >= self.state_cache.decided_idx,
+                "log sync from {} would overwrite decided entries up to {}",
+                sync.sync_idx,
+                self.state_cache.decided_idx
+            );
+        }
+        // A leader that completed Prepare without this node's Promise can be
+        // behind this node's decided index; it must never decrease.
+        let decided_idx = decided_idx.max(self.state_cache.decided_idx);
         self.state_cache.accepted_round = accepted_round;
         self.state_cache.decided_idx = decided_idx;
         let mut sync_txn: Vec<StorageOp<T>> = vec![
@@ -484,6 +495,12 @@ where
     /// The length of the replicated log, as if log was never compacted.
     pub(crate) fn get_accepted_idx(&self) -> usize {
         self.state_cache.accepted_idx
+    }
+
+    /// The number of entries currently buffered for batching, not yet reflected
+    /// in `get_accepted_idx()`.
+    pub(crate) fn get_batched_len(&self) -> usize {
+        self.state_cache.batched_entries.len()
     }
 
     pub(crate) fn get_suffix(&self, from: usize) -> StorageResult<Vec<T>> {
